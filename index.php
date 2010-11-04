@@ -5,11 +5,12 @@
  */
 session_start();
 include_once("config.php");
-/*
-unset($_SESSION['orequest_token_secret']);
-unset($_SESSION['oaccess_oauth_token']);
-unset($_SESSION['oaccess_oauth_token_secret']);
- */
+
+if ($_REQUEST['reset']) {
+				unset($_SESSION['orequest_token_secret']);
+				unset($_SESSION['oaccess_oauth_token']);
+				unset($_SESSION['oaccess_oauth_token_secret']);
+}
 
 $err="Error [OAuth]: "; 
 
@@ -91,12 +92,38 @@ try {
 								$response_info = $oauthc->getLastResponse();
 
 								// print out the speeddial data
-								echo "<pre>";
-								print_r(json_decode($response_info));
-								echo "</pre>";
+								$json_data_array = json_decode($response_info,true);
+
+								echo("<html>");
+								echo("<head><title>Opera Link SpeedDial PHP demo</title>");
+								echo("<link rel=\"stylesheet\" href=\"css/index.css\" type=\"text/css\">");				
+								echo("</head>");
+
+								echo("<body>");
+								echo("<div id=\"wrap\">");
+								echo("<div><h2>Opera Link - Speeddials</h2><a href=\"/link/index.php\">Update</a></div>");	
+								echo("<div>");
+								echo("<ol>");
+
+								foreach ($json_data_array as $sd) {
+												echo("<li>");
+												echo("<a href=\"".$sd["properties"]["uri"]."\">");
+												echo("<img class=\"logo\" src=\"http://www.opera.com/bitmaps/error/operaicon.png\" />");
+												echo("<div>");
+												echo($sd["properties"]["title"]);
+												echo("</div>");
+												echo("</a>");
+												echo("</li>");
+								}
+
+
+								echo("</ol>");
+								echo("</div>");
+								echo("</div>");
+								echo("</body>");
+								echo("</html>");
 				} 
 }catch(OAuthException $E) {
 				error_log($err.$E);
 }
-
 ?>
